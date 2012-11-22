@@ -1,24 +1,3 @@
-" ==============
-" pandocFile.vim
-" ==============
-"
-" This plugin converts various markup formats at read/write time.
-"
-"
-" Configuration example
-" =====================
-"
-" To use this plugin, you should define autocmds like below::
-"
-"   autocmd BufReadCmd *.textile call pandoc#Read(expand("<amatch>"), "textile", "rst")
-"   autocmd FileReadCmd *.textile call pandoc#Read(expand("<amatch>"), "textile", "rst")
-"   autocmd BufWriteCmd *.textile call pandoc#Write(expand("<amatch>"), "rst", "textile")
-"   autocmd FileWriteCmd *.textile call pandoc#Write(expand("<amatch>"), "rst", "textile")
-"
-" If you intend to use it for redmine textile format, please
-" ``let g:pandocFile_redmine_textile_workaround=1``
-" to activate workaround.
-
 function! pandocFile#Read(fname, from, to)
   if filereadable(a:fname)
     exe "silent read !pandoc -f " . a:from . " -t " . a:to . " " . shellescape(a:fname)
@@ -38,4 +17,9 @@ function! pandocFile#Write(fname, from, to)
   endif
 
   setlocal nomod
+endfunction
+
+function! pandocFile#DefAuto(pattern, from, to)
+  exe 'autocmd BufReadCmd,FileReadCmd ' . a:pattern . ' call pandocFile#Read(expand("<amatch>"), "' . a:from . '", "' . a:to . '")'
+  exe 'autocmd BufWriteCmd,FileWriteCmd ' . a:pattern .' call pandocFile#Write(expand("<amatch>"), "' . a:to . '", "' . a:from .'")'
 endfunction
